@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Reproducibility, Workflow, Version Control"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -30,22 +30,22 @@ The completed exercise is due on Thursday, 17 January, 2018 before class begins.
 ### Question
 Why are reproducible practices becoming the norm in data analytics?
 
-> Answer: 
+> Answer: Reproducibility means that an original dataset can be analyzed by others using the same or different codes as the original approach to get the same results as the original data analytics. Reproducible practices are essential and become the norm in data analytics because reproducibility ensures the accuracy of the data analytics. It makes sure that other researchers can reproduce the same results from the original data and may continue to work on the data from the existing results.
 
 ### Question
 What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I learned R from ENV 710 Applied Statistics for Environmental Science course. I have never used Git before.
 
 ### Question
 Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: Only the GLMs section.
 
 ### Question
 Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: No.
 
 
 ## 2) GitHub
@@ -53,6 +53,4 @@ Are there any components of the course about which you feel apprehensive?
 ### Your Repository
 Provide a link below to your course repository in GitHub. Make sure you have pulled all recent changes from the course repository (https://github.com/KateriSalk/Environmental_Data_Analytics) and that you have updated your course README file. 
 
-> Answer: 
-
-
+> Answer: https://github.com/Jiaqi-Li-Duke/Environmental_Data_Analytics
