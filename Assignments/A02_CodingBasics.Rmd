@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -28,15 +28,18 @@ The completed exercise is due on Thursday, 24 January, 2019 before class begins.
 ## Basics Day 1
 
 1. Generate a sequence of numbers from one to 100, increasing by fours. Assign this sequence a name. 
-
 2. Compute the mean and median of this sequence. 
-
 3. Ask R to determine whether the mean is greater than the median. 
-
 4. Insert comments in your code to describe what you are doing.
 
 ```{r}
-
+# Create a sequence from 1 to 100 by 4
+seq <- seq(1,100,4)
+# Compute mean and median of the sequence
+seqmean <- mean(seq)
+seqmed <- median(seq)
+#Compare the mean and median
+seqmean > seqmed
 ```
 
 ## Basics Day 2
