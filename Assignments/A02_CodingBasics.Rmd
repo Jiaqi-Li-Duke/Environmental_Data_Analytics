@@ -53,21 +53,28 @@ seqmean > seqmed
 8. Label the columns of your data frame with informative titles.
 
 ```{r}
-
+name <- c("Jack", "Jen", "Jim", "John") # character vector
+score <- c(80, 60, 40, 70) # numeric vector
+pass <- c(TRUE, TRUE, FALSE, TRUE) # logical vector
+grade <- data.frame(name, score, pass)
+names(grade) <- c("Name", "Score", "Pass")
 ```
 
 9. QUESTION: How is this data frame different from a matrix?
 
-> ANSWER: 
+> ANSWER: A data frame can contain columns with different modes, while a matrix is a two-dimension structure which can only contain elements of the same type.
 
 10. Create a function with an if/else statement. Your function should determine whether a test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. The name of your function should be informative.
 
 11. Apply your function to the vector with test scores that you created in number 5. 
 
 ```{r}
-
+passtest <- function(x){
+   ifelse(x >= 50, TRUE, FALSE)
+}
+pass1 <- passtest(score)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> ANSWER: 
+> ANSWER: The `ifelse` statement worked because the `ifelse()` statement is vectorized and it can run through every element in the vector. However, the `if` and `else` statement can only evaluate the first element in the vector and give a warning.
