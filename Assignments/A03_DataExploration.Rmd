@@ -1,8 +1,10 @@
 ---
 title: "Assignment 3: Data Exploration"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## OVERVIEW
@@ -28,15 +30,22 @@ The completed exercise is due on Thursday, 31 January, 2019 before class begins.
 ## 1) Set up your R session
 
 Check your working directory, load necessary packages (tidyverse), and upload the North Temperate Lakes long term monitoring dataset for the light, temperature, and oxygen data for three lakes (file name: NTL-LTER_Lake_ChemistryPhysics_Raw.csv). Type your code into the R chunk below.
-```{r}
 
+```{r}
+#Check working directory
+getwd()
+setwd("/Users/ljq/Desktop/Blue Devils/Data Analysis/ENV872_02")
+# Load package
+library(tidyverse)
+#Import Data
+lake <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 ```
 
 ## 2) Learn about your system
 
 Read about your dataset in the NTL-LTER README file. What are three salient pieces of information you gained from reading this file?
 
-> ANSWER: 
+> ANSWER: Three salient pieces of information in the README file are database information, data content information, and naming conventions and file formats. Database information describes where, how, and when the data was collected. Data content information contains definitions and collection methods of each variable from the NTL-LTER database website. Naming conventions and file formats contains the rules of naming files.
 
 ## 3) Obtain basic summaries of your data
 
@@ -49,28 +58,34 @@ Write R commands to display the following information:
 5. summary of lakename, depth, and temperature
 
 ```{r}
-# 1
-
-# 2
-
-# 3
-
-# 4
-
-# 5
-
+# 1 Dimension of the dataset
+dim(lake)
+# 2 Class of the dataset
+class(lake)
+# 3 First 8 rows of the dataset
+head(lake, 8)
+# 4 Class of the variables
+class(lake$lakename)
+class(lake$sampledate)
+class(lake$depth)
+class(lake$temperature_C)
+# 5 Summary of the variables
+summary(lake$lakename)
+summary(lake$depth)
+summary(lake$temperature_C)
 ```
 
 Change sampledate to class = date. After doing this, write an R command to display that the class of sammpledate is indeed date. Write another R command to show the first 10 rows of the date column. 
 
 ```{r}
-
+lake$sampledate <- as.Date(lake$sampledate, format = "%m/%d/%y")
+class(lake$sampledate)
+head(lake$sampledate, 10)
 ```
 
 Question: Do you want to remove NAs from this dataset? Why or why not?
 
-> ANSWER: 
-
+> ANSWER: No, the reason that NAs should not be removed is that NAs have meanings that some of the data was not collected or not availble in this dataset. It may cause inaccuracy in the data analysis.
 
 ## 4) Explore your data graphically
 
