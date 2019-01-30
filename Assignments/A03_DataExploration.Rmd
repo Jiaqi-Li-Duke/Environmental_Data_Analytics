@@ -85,7 +85,7 @@ head(lake$sampledate, 10)
 
 Question: Do you want to remove NAs from this dataset? Why or why not?
 
-> ANSWER: No, the reason that NAs should not be removed is that NAs have meanings that some of the data was not collected or not availble in this dataset. It may cause inaccuracy in the data analysis.
+> ANSWER: No, the reason that NAs should not be removed is that NAs have meanings that some of the data was not collected or not availble in this dataset. It may cause inaccuracy in the data analysis if NAs are removed.
 
 ## 4) Explore your data graphically
 
@@ -99,8 +99,29 @@ Write R commands to display graphs depicting:
 6. Boxplot of temperature based on depth, with depth divided into 0.25 m increments
 7. Scatterplot of temperature by depth
 
-```{r}
-# 1
+```{r, fig.height = 3, fig.width = 4, fig.cap = c("Temperature at Paul Lake", "Temperature at Peter Lake", "Temperature at Tuesday Lake", "Temperature at East Long Lake", "Temperature at West Long Lake", "Temperature at Central Long Lake", "Temperature at Hummingbird Lake", "Temperature at Crampton Lake", "Temperature at Ward Lake")}
+# 1 Bar chart of temperature counts for each lake
+lakenames <- unique(lake$lakename)
+lakenames <- c("Paul Lake", "Peter Lake", "Tuesday Lake", "East Long Lake", "West Long Lake", "Central Long Lake", "Hummingbird Lake", "Crampton Lake","Ward Lake")
+
+ggplot(lake[lake$lakename == c('Paul Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Peter Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Tuesday Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('East Long Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('West Long Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Central Long Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Hummingbird Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Crampton Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
+ggplot(lake[lake$lakename == c('Ward Lake'),], aes(x = temperature_C)) +
+  geom_bar(binwidth=0.5)
 
 # 2
 
