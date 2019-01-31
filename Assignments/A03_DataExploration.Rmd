@@ -45,7 +45,7 @@ lake <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
 Read about your dataset in the NTL-LTER README file. What are three salient pieces of information you gained from reading this file?
 
-> ANSWER: Three salient pieces of information in the README file are database information, data content information, and naming conventions and file formats. Database information describes where, how, and when the data was collected. Data content information contains definitions and collection methods of each variable from the NTL-LTER database website. Naming conventions and file formats contains the rules of naming files.
+> ANSWER: Three salient pieces of information in the README file are database information, data content information, and naming conventions and file formats. Database information describes where, how, and when the data was collected. Data content information contains definitions and collection methods of each variable from the NTL-LTER database website, including carbon, nutrients, and physical and chemical limnology. Naming conventions and file formats contains the rules of naming files.
 
 ## 3) Obtain basic summaries of your data
 
@@ -65,10 +65,7 @@ class(lake)
 # 3 First 8 rows of the dataset
 head(lake, 8)
 # 4 Class of the variables
-class(lake$lakename)
-class(lake$sampledate)
-class(lake$depth)
-class(lake$temperature_C)
+class(lake$lakename); class(lake$sampledate); class(lake$depth); class(lake$temperature_C)
 # 5 Summary of the variables
 summary(lake$lakename)
 summary(lake$depth)
@@ -99,53 +96,48 @@ Write R commands to display graphs depicting:
 6. Boxplot of temperature based on depth, with depth divided into 0.25 m increments
 7. Scatterplot of temperature by depth
 
-```{r, fig.height = 3, fig.width = 4, fig.cap = c("Temperature at Paul Lake", "Temperature at Peter Lake", "Temperature at Tuesday Lake", "Temperature at East Long Lake", "Temperature at West Long Lake", "Temperature at Central Long Lake", "Temperature at Hummingbird Lake", "Temperature at Crampton Lake", "Temperature at Ward Lake")}
+```{r, fig.height = 4, fig.width = 6, warning= FALSE, message = FALSE, fig.cap = c("Bar chart of temperature for each lake", "Histogram of distributions of temperature", "Histogram of detailed distributions of temperature", "Frequency polygon of temperature for each lake", "Boxplot of temperature for each lake", "Boxplot of temperature based on depth", "Scatterplot of temperature by depth")}
 # 1 Bar chart of temperature counts for each lake
-lakenames <- unique(lake$lakename)
-lakenames <- c("Paul Lake", "Peter Lake", "Tuesday Lake", "East Long Lake", "West Long Lake", "Central Long Lake", "Hummingbird Lake", "Crampton Lake","Ward Lake")
+ggplot(lake, aes(x = temperature_C)) +
+  geom_bar(aes(fill = lakename, binwidth=0.5))
 
-ggplot(lake[lake$lakename == c('Paul Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Peter Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Tuesday Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('East Long Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('West Long Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Central Long Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Hummingbird Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Crampton Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
-ggplot(lake[lake$lakename == c('Ward Lake'),], aes(x = temperature_C)) +
-  geom_bar(binwidth=0.5)
+# 2 Histogram of count distributions of temperature
+ggplot(lake) +
+  geom_histogram(aes(x = temperature_C))
 
-# 2
+# 3 Change the bin
+ggplot(lake) +
+  geom_histogram(aes(x = temperature_C), binwidth = 0.5)
 
-# 3
+# 4 Frequency polygon of temperature for each lake
+ggplot(lake) +
+  geom_freqpoly(aes(x = temperature_C, color= lakename), bins = 50) +
+  scale_color_brewer(palette="Set1")
 
-# 4
+# 5 Boxplot of temperature for each lake
+ggplot(lake) +
+  geom_boxplot(aes(x = lakename, y = temperature_C)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 5
+# 6 Boxplot of temperature based on depth
+ggplot(lake) +
+  geom_boxplot(aes(x = depth, y = temperature_C, group = cut_width(depth, 0.25)))
 
-# 6
-
-# 7 
-
+# 7 Scatterplot of temperature by depth
+ggplot(lake) +
+  geom_point(aes(x = depth, y = temperature_C))
 ```
+
 ## 5) Form questions for further data analysis
 
 What did you find out about your data from the basic summaries and graphs you made? Describe in 4-6 sentences.
 
-> ANSWER: 
+> ANSWER: This dataset has 38614 observations and 11 variables, containing information such as temperature, depth, dissolved oxygen, in nine lakes in the North Temperate Lakes District in Wisconsin, USA. The data was collected from 1984 to 2016. From the graphs above, we may tell that though there are differences in the temperature between the nine lakes, they share the same trend that most of the counts fall in the range of 3 to 6 degree. East Long Lake has the overall lowest water temperature. Besides, there is a negative relationship between water temperature and depth.
 
 What are 3 further questions you might ask as you move forward with  analysis of this dataset?
 
-> ANSWER 1: 
+> ANSWER 1: What are the dissolved oxygen concentrations in each lake?
 
-> ANSWER 2: 
+> ANSWER 2: Is there any relationship between water depth and dissolved oxygen in each lake and in all lakes?
 
-> ANSWER 3: 
+> ANSWER 3: Is there any relationship between water temperature and dissolved oxygen in each lake and in all lakes?
