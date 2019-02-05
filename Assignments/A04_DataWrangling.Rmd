@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,10 +32,23 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 
 2. Generate a few lines of code to get to know your datasets (basic data summaries, etc.).
 
-```{r}
-#1
-
-#2
+```{r echo=T, results='hide'}
+#1 Preparation
+getwd()
+library(tidyverse)
+pm2017 <- read.csv("./Data/Raw/EPAair_PM25_NC2017_raw.csv")
+pm2018 <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv")
+ozone2017 <- read.csv("./Data/Raw/EPAair_O3_NC2017_raw.csv")
+ozone2018 <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv")
+#2 Data summary
+dim(pm2017)
+head(pm2017)
+dim(pm2018)
+head(pm2018)
+dim(ozone2017)
+head(ozone2017)
+dim(ozone2018)
+head(ozone2018)
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -45,9 +58,13 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 6. Save all four processed datasets in the Processed folder.
 
 ```{r}
-#3
-
-#4
+#3 Change date type
+pm2017$Date <- as.Date(pm2017$Date, format="%m/%d/%y")
+pm2018$Date <- as.Date(pm2018$Date, format="%m/%d/%y")
+ozone2017$Date <- as.Date(ozone2017$Date, format="%m/%d/%y")
+ozone2018$Date <- as.Date(ozone2018$Date, format="%m/%d/%y")
+#4 Select columns
+pm2017_new <- select(pm2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 
 #5
 
