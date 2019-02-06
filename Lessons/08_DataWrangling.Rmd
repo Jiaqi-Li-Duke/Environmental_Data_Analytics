@@ -50,11 +50,16 @@ write.csv(NTL.nutrient.data.PeterPaul, row.names = FALSE, file = "./Data/Process
 
 # Remove columns that are not of interest for analysis
 NTL.phys.data.PeterPaul.skinny <- select(NTL.phys.data.PeterPaul, 
+<<<<<<< HEAD
                                          lakename, year4, sampledate:irradianceDeck)
 #If we want to remove a column, just select(NTL.phys.data.PeterPaul, -lakename)
 #NTL.phys.data.PeterPaul.skinny <- select(NTL.phys.data.PeterPaul, -lakeid)  
+=======
+                                         lakename, daynum, year4, sampledate:irradianceDeck)
+  
+>>>>>>> 9e61c6b29e8c788d570f18670dd27b0a5859bd54
 NTL.nutrient.data.PeterPaul.skinny <- select(NTL.nutrient.data.PeterPaul, 
-                                             lakename, year4, sampledate, depth:po4)
+                                             lakename, daynum, year4, sampledate, depth:po4)
 ```
 
 
@@ -105,7 +110,12 @@ Let's say we want to generate a new dataset that contains all possible physical 
 
 NTL.phys.nutrient.data.PeterPaul <- full_join(NTL.phys.data.PeterPaul.skinny, NTL.nutrient.data.PeterPaul.skinny)
 
+<<<<<<< HEAD
 write.csv(NTL.phys.nutrient.data.PeterPaul, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+=======
+write.csv(NTL.phys.nutrient.data.PeterPaul, row.names = FALSE, 
+          file ="./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+>>>>>>> 9e61c6b29e8c788d570f18670dd27b0a5859bd54
 
 ```
 
@@ -146,6 +156,9 @@ NTL.PeterPaul.summaries <-
             meanTP = mean(tp_ug), 
             sdTP = sd(tp_ug))
 write.csv(NTL.PeterPaul.summaries, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_Summary_PeterPaul_Processed.csv")
+
+write.csv(NTL.PeterPaul.summaries, row.names = FALSE, 
+          file ="./Data/Processed/NTL-LTER_Lake_Summaries_PeterPaul_Processed.csv")
 
 ```
 
