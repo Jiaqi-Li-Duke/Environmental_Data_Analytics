@@ -43,12 +43,16 @@ ozone2018 <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv")
 #2 Data summary
 dim(pm2017)
 head(pm2017)
+colnames(pm2017)
 dim(pm2018)
 head(pm2018)
+colnames(pm2018)
 dim(ozone2017)
 head(ozone2017)
+colnames(ozone2017)
 dim(ozone2018)
 head(ozone2018)
+colnames(ozone2018)
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -65,10 +69,17 @@ ozone2017$Date <- as.Date(ozone2017$Date, format="%m/%d/%y")
 ozone2018$Date <- as.Date(ozone2018$Date, format="%m/%d/%y")
 #4 Select columns
 pm2017_new <- select(pm2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-
-#5
-
-#6
+pm2018_new <- select(pm2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+ozone2017_new <- select(ozone2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+ozone2018_new <- select(ozone2018, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+#5 Fill AQS_PARAMETER_DESC cells
+pm2017_new$AQS_PARAMETER_DESC <- "PM2.5"
+pm2018_new$AQS_PARAMETER_DESC <- "PM2.5"
+#6 Save files
+write.csv(pm2017_new, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2017_Processed.csv")
+write.csv(pm2018_new, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_Processed.csv")
+write.csv(ozone2017_new, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2017_Processed.csv")
+write.csv(ozone2018_new, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_Processed.csv")
 
 ```
 
@@ -85,9 +96,19 @@ pm2017_new <- select(pm2017, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DES
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1718_Processed.csv"
 
 ```{r}
-#8
+#7 Combine the four datasets
+air_combine <- rbind(pm2017_new, pm2018_new, ozone2017_new, ozone2018_new)
+#8 Pipe function
+library(lubridate)
+air_combine.processed <- 
+  air_combine %>%
+  filter(air_combine$Site.Name %in% c("Blackstone", "Bryson City", "Castle Hayne", "Leggett", "Triple Oak")) %>%
+  mutate(Month = month(Date), Year = year(Date))
+#9 Spread the dataset
+air_combine.processed <- spread(air_combine.processed, AQS_PARAMETER_DESC, DAILY_AQI_VALUE)
 
-#9
+NTL.nutrient.data.PeterPaul.spread <- spread(NTL.nutrient.data.PeterPaul.gathered, nutrient, concentration) #Opposite of Gather function, seperate a column into several ones.
+
 
 #10
 
