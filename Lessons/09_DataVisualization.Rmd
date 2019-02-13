@@ -115,13 +115,11 @@ print(O3plot.Blackstone)
 
 # 1. 
 # Plot surface temperatures by day of year. 
-templot <- ggplot(subset(PeterPaul.chem.nutrients, depth = 0)) +
-  geom_point(aes(x = sampledate, y = temperature_C, color = year4))
-print(templot)
 # Color your points by year, and facet by lake in two rows.
 templot.faceted <-
-  ggplot(subset(PeterPaul.chem.nutrients, depth = 0)) +
-  geom_point(aes(x = sampledate, y = temperature_C, color = year4)) +
+  ggplot(subset(PeterPaul.chem.nutrients, depth = 0), 
+         aes(x = sampledate, y = temperature_C, color = year4)) +
+  geom_point() +
   facet_wrap(vars(lakename), nrow = 2)
 print(templot.faceted)
 
@@ -135,7 +133,7 @@ print(templot.depth)
 ```
 ### Plotting the relationship between two continuous variables: Scatterplot
 
-```{r, fig.height = 3, fig.width = 4, warning = FALSE}
+```{r}
 # Scatterplot
 lightvsDO <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = irradianceWater, y = dissolvedOxygen)) +
@@ -160,8 +158,8 @@ print(tempvsdepth)
 
 NvsP <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth)) +
-  geom_point() #+
-  #geom_smooth(method = lm) +
+  geom_point() +
+  geom_smooth(method = lm) #+
   #geom_abline(aes(slope = 16, intercept = 0))
 print(NvsP)
 
@@ -170,7 +168,9 @@ print(NvsP)
 # 1. 
 # Plot AQI values for ozone by PM2.5, colored by site. 
 # Add a line of best fit for the linear regression of these variables.
-
+ggplot(EPAair, aes(x = PM2.5, y = Ozone, color = Site.Name)) +
+  geom_point() +
+  geom_smooth(method = lm)
   
 ```
 

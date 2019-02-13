@@ -50,14 +50,11 @@ write.csv(NTL.nutrient.data.PeterPaul, row.names = FALSE, file = "./Data/Process
 
 # Remove columns that are not of interest for analysis
 NTL.phys.data.PeterPaul.skinny <- select(NTL.phys.data.PeterPaul, 
-<<<<<<< HEAD
                                          lakename, year4, sampledate:irradianceDeck)
+
 #If we want to remove a column, just select(NTL.phys.data.PeterPaul, -lakename)
 #NTL.phys.data.PeterPaul.skinny <- select(NTL.phys.data.PeterPaul, -lakeid)  
-=======
-                                         lakename, daynum, year4, sampledate:irradianceDeck)
-  
->>>>>>> 9e61c6b29e8c788d570f18670dd27b0a5859bd54
+                                       
 NTL.nutrient.data.PeterPaul.skinny <- select(NTL.nutrient.data.PeterPaul, 
                                              lakename, daynum, year4, sampledate, depth:po4)
 ```
