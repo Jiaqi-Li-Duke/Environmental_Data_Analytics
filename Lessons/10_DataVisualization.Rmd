@@ -41,7 +41,7 @@ print(O3plot1)
 
 O3plot2 <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone)) +
-  theme_bw()
+  theme_bw() # White background and black border
 print(O3plot2)
 
 O3plot3 <- ggplot(EPAair) +
@@ -51,7 +51,7 @@ print(O3plot3)
 
 O3plot4 <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone)) +
-  theme_classic()
+  theme_classic() # No grid, just axis
 print(O3plot4)
 ```
 
@@ -75,7 +75,7 @@ O3plot5 <- ggplot(EPAair) +
   mytheme
 print(O3plot5)  
 
-theme_set(mytheme)
+theme_set(mytheme) # Use the set theme for the entire session
 
 O3plot6 <- ggplot(EPAair) +
   geom_point(aes(x = Date, y = Ozone))
@@ -117,7 +117,7 @@ Perception is key! Choose palettes that are visually pleasing and will communica
 ```{r, warning = FALSE}
 #install.packages("viridis")
 #install.packages("RColorBrewer")
-#install.packages("colormap")
+install.packages("colormap")
 library(viridis)
 library(RColorBrewer)
 library(colormap)
@@ -138,10 +138,10 @@ print(NvsP)
 NvsP2 <-
   ggplot(PeterPaul.chem.nutrients, aes(x = tp_ug, y = tn_ug, color = depth, shape = lakename)) +
   geom_point(alpha = 0.8, size = 3) +
-  #xlab() +
-  #ylab() +
+  xlab(expression("Total phosphorus (\U003BCg/L)")) + 
+  ylab(expression("Total nitrogen (ug/L)")) +
   # change your legend labels here
-  scale_shape_manual(values = c(15, 17)) +
+  scale_shape_manual(values = c(15, 17)) + 
   #scale_color_distiller(palette = "Blues", direction = 1) + # use scale_color_brewer for discrete variables
   scale_color_viridis(option = "magma", direction = -1) +
   theme(legend.position = "right", 
@@ -149,8 +149,8 @@ NvsP2 <-
 print(NvsP2)
 
 # change your y axis label to list concentration in micrograms per liter
-# remove your x axis label
-# change labels for nutrients in the legend
+# remove your x axis label 
+# change labels for nutrients in the legend 
 Nutrientplot <-
   ggplot(PeterPaul.nutrients.gathered, aes(x = lakename, y = concentration, color = nutrient)) +
   geom_boxplot() +
@@ -158,8 +158,9 @@ Nutrientplot <-
   scale_y_continuous(expand = c(0, 0)) +
   #scale_color_brewer(palette = "YlGnBu") +
   #scale_color_manual(values = c("#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84")) +
-  #scale_color_viridis(discrete = TRUE) +
-  theme(legend.position = "right")
+  scale_color_viridis(discrete = TRUE) +
+  theme(legend.position = "right") +
+  xlab(element_blank())
 print(Nutrientplot)
 ```
 
@@ -171,7 +172,7 @@ PMplot.faceted <-
   geom_point() +
   facet_grid(Site.Name ~ year) + 
   scale_x_continuous(breaks = c(1:12)) +
-  #theme(strip.background = element_rect(fill = "black"), strip.text = element_text(color = "white"))
+  theme(strip.background = element_rect(fill = "black"), strip.text = element_text(color = "white")) +
   ylab(expression("PM 2.5 AQI Value")) 
 print(PMplot.faceted)
 
@@ -198,5 +199,5 @@ The `ggsave` function allows you to save plots in jpg, png, eps, pdf, tiff, and 
 * resolution (dpi)
 
 For example: 
-`ggsave("PMplot.jpg", PMplot.faceted,  path = "./Output/PMplotjpg", height = 4, width = 6, units = "in", dpi = 300)`
+`ggsave("PMplot.jpg", PMplot.faceted,  path = "./Output/PMplot.jpg", height = 4, width = 6, units = "in", dpi = 300)`
 
