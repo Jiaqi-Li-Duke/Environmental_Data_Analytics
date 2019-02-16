@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -33,16 +33,32 @@ The completed exercise is due on Tuesday, 19 February, 2019 before class begins.
 2. Make sure R is reading dates as date format, not something else (hint: remember that dates were an issue for the USGS gauge data).
 
 ```{r}
-#1
-
-#2
+#1 Set up
+setwd("/Users/ljq/Desktop/Blue Devils/Data Analysis/ENV872_02")
+library(tidyverse)
+PeterPaul <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+stream <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+tox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
+PeterPaul.gathered <- read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
+#2 Format date
+PeterPaul$sampledate <- as.Date(PeterPaul$sampledate, format = "%m/%d/%y")
+stream$datetime <- as.Date(stream$datetime, format = "%m/%d/%y")
+stream$datetime <- format(stream$datetime, "%y%m%d")
+create.early.dates <- (function(d) {
+       paste0(ifelse(d > 181231,"19","20"),d)
+       })
+stream$datetime <- create.early.dates(stream$datetime)
+stream$datetime <- as.Date(stream$datetime, format = "%Y%m%d")
+PeterPaul.gathered$sampledate <- as.Date(PeterPaul.gathered$sampledate, format = '%Y-%m-%d')
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme.
 
 ```{r}
 #3
-
+top.theme <- theme_classic(base_size = 12) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
 ```
 
 ## Create graphs
@@ -52,16 +68,42 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 
 4. [NTL-LTER] Plot total phosphorus by phosphate, with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black.
 
-```{r}
-#4
+```{r, fig.cap= 'Total phosphorus level in Peter Lake and Paul Lake'}
+#4 Total phosphorus level in Peter and Paul lakes
+P.plot <- ggplot(PeterPaul, aes(x = po4, y = tp_ug)) +
+  geom_point(aes(color = lakename, shape = lakename)) +
+  xlim(0, 50) +
+  xlab(expression("Phosphate (\U003BCg/L)")) + 
+  ylab(expression("Total phosphorus (ug/L)")) +
+  geom_smooth(method = lm, color = '#636363') +
+  scale_color_discrete(name="Lake Name") +
+  scale_shape_discrete(name="Lake Name") +
+  top.theme
 
+print(P.plot)
 ```
 
 
 5. [NTL-LTER] Plot nutrients by date for Peter Lake, with separate colors for each depth. Facet your graph by the nutrient type.
 
 ```{r}
-#5
+#5 Nutrient facet
+Peter.gathered <- PeterPaul.gathered[PeterPaul.gathered$lakename == 'Peter Lake',]
+
+theme.facet <- 
+  theme_light() + 
+  theme(strip.background = element_rect(fill = "white"), strip.text = element_text(color = "black")) +
+  theme(axis.text.x = element_text(angle = 90,  hjust = 1))
+
+nutrient.facet <- 
+  ggplot(Peter.gathered, aes(x = sampledate, y = concentration, color = depth)) +
+  geom_point() +
+  facet_wrap(vars(nutrient), nrow = 5, scales="free_y") +
+  scale_x_date(limits = as.Date(c("1991-01-01", "2016-12-31")), 
+    date_breaks = "9 months", date_labels = "%b %y") +
+  theme.facet
+
+print(nutrient.facet)
 
 ```
 
