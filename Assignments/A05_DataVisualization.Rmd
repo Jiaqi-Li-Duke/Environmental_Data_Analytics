@@ -39,7 +39,8 @@ library(tidyverse)
 PeterPaul <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
 stream <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 tox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
-PeterPaul.gathered <- read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
+PeterPaul.gathered <-
+  read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
 #2 Format date
 PeterPaul$sampledate <- as.Date(PeterPaul$sampledate, format = "%m/%d/%y")
 stream$datetime <- as.Date(stream$datetime, format = "%m/%d/%y")
@@ -75,15 +76,16 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 
 4. [NTL-LTER] Plot total phosphorus by phosphate, with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black.
 
-```{r, fig.cap= 'Total phosphorus level in Peter Lake and Paul Lake'}
+```{r, warning= FALSE, fig.cap= 'Total phosphorus level in Peter Lake and Paul Lake'}
 #4 Total phosphorus level in Peter and Paul lakes
 P.plot <- ggplot(PeterPaul, aes(x = po4, y = tp_ug)) +
   geom_point(aes(color = lakename, shape = lakename)) +
   xlim(0, 50) +
-  xlab(expression("Phosphate (\U003BCg/L)")) + 
-  ylab(expression("Total phosphorus (\U003BCg/L)")) +
-  geom_smooth(method = lm, color = '#636363') +
-  scale_color_discrete(name="Lake Name") +
+  xlab(expression(paste("Phosphate (", mu, "g/L)", sep = ""))) + 
+  ylab(expression(paste("Total phosphorus (", mu, "g/L)", sep = ""))) +
+  geom_smooth(method = lm, color = 'black') +
+  scale_color_manual(values=c("#E69F00", "#56B4E9"), name="Lake Name") +
+  #scale_color_discrete(name="Lake Name") +
   scale_shape_discrete(name="Lake Name") +
   top.theme
 
@@ -93,25 +95,28 @@ print(P.plot)
 
 5. [NTL-LTER] Plot nutrients by date for Peter Lake, with separate colors for each depth. Facet your graph by the nutrient type.
 
-```{r}
+```{r, warning= FALSE, fig.cap= 'Nutrients for Peter Lake'}
 #5 Nutrient facet
 
 theme.facet <- 
   theme_light() + 
-  theme(strip.background = element_rect(fill = "white"), strip.text = element_text(color = "black")) +
+  theme(strip.background = element_rect(fill = "white"), strip.text =
+          element_text(color = "black")) +
   theme(axis.text.x = element_text(angle = 90,  hjust = 1))
 
 nutrient <- c("nh34" = "Ammonia", "no23" = "Nitrite", "po4" = "Phosphate", 
               "tn_ug" = "Total N", "tp_ug" = "Total P")
 
 nutrient.facet <- 
-  ggplot(subset(PeterPaul.gathered, lakename == 'Peter Lake'), aes(x = sampledate, y = concentration, color = depth)) +
+  ggplot(subset(PeterPaul.gathered, lakename == 'Peter Lake'), 
+         aes(x = sampledate, y = concentration, color = depth)) +
   geom_point(size = 1) +
-  facet_wrap(vars(nutrient), nrow = 5, scales="free_y", strip.position="right", labeller = as_labeller(nutrient)) +
+  facet_wrap(vars(nutrient), nrow = 5, scales="free_y", strip.position="right",
+             labeller = as_labeller(nutrient)) +
   scale_x_date(limits = as.Date(c("1991-01-01", "2016-12-31")), 
-    date_breaks = "9 months", date_labels = "%b %y") +
+    date_breaks = "12 months", date_labels = "%b %y") +
   xlab("Sample Date") +
-  ylab(expression("Concentration (\U003BCg/L)")) +
+  ylab(expression(paste("Concentration (", mu, "g/L)", separate = ""))) +
   scale_color_continuous(name="Depth (m)") +
   theme.facet
 
@@ -122,7 +127,7 @@ print(nutrient.facet)
 
 6. [USGS gauge] Plot discharge by date. Create two plots, one with the points connected with geom_line and one with the points connected with geom_smooth (hint: do not use method = "lm"). Place these graphs on the same plot (hint: ggarrange or something similar)
 
-```{r}
+```{r, warning= FALSE, message= FALSE, fig.cap= 'Discharge for Eno River'}
 #6 Discharge plot
 stream.theme <- theme_classic() +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
@@ -149,13 +154,14 @@ library(gridExtra)
 grid.arrange(stream.plot, stream.plot.2)
 
 ```
+
 Question: How do these two types of lines affect your interpretation of the data?
 
 > Answer: geom_line function connects all the data points and shows the pattern of discharge variation. On the other hand, geom_smooth function only shows an overall relationship between date and discharge rate.
 
 7. [ECOTOX Neonicotinoids] Plot the concentration, divided by chemical name. Choose a geom that accurately portrays the distribution of data points.
 
-```{r}
+```{r, warning= FALSE, fig.cap= 'Neonicotinoids concentrations by chemical'}
 #7 Neonicotinoids
 
 tox.theme <- theme_light() +
@@ -163,13 +169,12 @@ tox.theme <- theme_light() +
         axis.ticks.x=element_blank())
 
 tox.plot <- ggplot(tox, aes(x = Chemical.Name, y = Conc..Mean..Std.)) +
-  geom_point(aes(color =Chemical.Name)) + 
+  geom_boxplot(aes(color =Chemical.Name)) + 
   xlab(element_blank()) +
   ylab("Concentration") +
-  scale_color_discrete(name="Chemical Name") +
+  scale_color_brewer(palette = "YlGnBu", name="Chemical Name") +
   tox.theme
   
 print(tox.plot)
 ```
-
 
