@@ -67,6 +67,7 @@ PeterPaul.gathered$sampledate <- as.Date(PeterPaul.gathered$sampledate, format =
 top.theme <- theme_classic(base_size = 12) +
   theme(axis.text = element_text(color = "black"), 
         legend.position = "top")
+theme_set(top.theme)
 ```
 
 ## Create graphs
@@ -85,8 +86,7 @@ P.plot <- ggplot(PeterPaul, aes(x = po4, y = tp_ug)) +
   ylab(expression(paste("Total phosphorus (", mu, "g/L)", sep = ""))) +
   geom_smooth(method = lm, color = 'black') +
   scale_color_manual(values=c("#E69F00", "#56B4E9"), name="Lake Name") +
-  scale_shape_discrete(name="Lake Name") +
-  top.theme
+  scale_shape_discrete(name="Lake Name")
 
 print(P.plot)
 ```
