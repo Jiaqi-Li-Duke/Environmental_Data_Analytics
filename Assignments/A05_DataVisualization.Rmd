@@ -76,7 +76,7 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 
 4. [NTL-LTER] Plot total phosphorus by phosphate, with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black.
 
-```{r, warning= FALSE, fig.cap= 'Total phosphorus level in Peter Lake and Paul Lake'}
+```{r, warning= FALSE, message= FALSE, fig.cap= 'Total phosphorus level in Peter Lake and Paul Lake'}
 #4 Total phosphorus level in Peter and Paul lakes
 P.plot <- ggplot(PeterPaul, aes(x = po4, y = tp_ug)) +
   geom_point(aes(color = lakename, shape = lakename)) +
@@ -85,7 +85,6 @@ P.plot <- ggplot(PeterPaul, aes(x = po4, y = tp_ug)) +
   ylab(expression(paste("Total phosphorus (", mu, "g/L)", sep = ""))) +
   geom_smooth(method = lm, color = 'black') +
   scale_color_manual(values=c("#E69F00", "#56B4E9"), name="Lake Name") +
-  #scale_color_discrete(name="Lake Name") +
   scale_shape_discrete(name="Lake Name") +
   top.theme
 
@@ -95,9 +94,10 @@ print(P.plot)
 
 5. [NTL-LTER] Plot nutrients by date for Peter Lake, with separate colors for each depth. Facet your graph by the nutrient type.
 
-```{r, warning= FALSE, fig.cap= 'Nutrients for Peter Lake'}
+```{r, warning= FALSE, message= FALSE, fig.cap= 'Nutrients for Peter Lake'}
 #5 Nutrient facet
 
+library(viridis)
 theme.facet <- 
   theme_light() + 
   theme(strip.background = element_rect(fill = "white"), strip.text =
@@ -117,7 +117,7 @@ nutrient.facet <-
     date_breaks = "12 months", date_labels = "%b %y") +
   xlab("Sample Date") +
   ylab(expression(paste("Concentration (", mu, "g/L)", separate = ""))) +
-  scale_color_continuous(name="Depth (m)") +
+  scale_color_viridis(name="Depth (m)") +
   theme.facet
 
 print(nutrient.facet)
@@ -133,7 +133,7 @@ stream.theme <- theme_classic() +
   theme(axis.text.x = element_text(angle = 45,  hjust = 1))
 
 stream.plot <- ggplot(stream, aes(x = datetime, y = discharge.mean)) +
-  geom_point() +
+  geom_point(size = 1) +
   geom_line() +
   scale_x_date(limits = as.Date(c("2004-07-01", "2018-12-31")),
 date_breaks = "6 months", date_labels = "%b %y") +
@@ -142,7 +142,7 @@ date_breaks = "6 months", date_labels = "%b %y") +
   stream.theme
 
 stream.plot.2 <- ggplot(stream, aes(x = datetime, y = discharge.mean)) +
-  geom_point() +
+  geom_point(size = 1) +
   geom_smooth() +
   scale_x_date(limits = as.Date(c("2004-07-01", "2018-12-31")),
 date_breaks = "6 months", date_labels = "%b %y") +
@@ -157,7 +157,7 @@ grid.arrange(stream.plot, stream.plot.2)
 
 Question: How do these two types of lines affect your interpretation of the data?
 
-> Answer: geom_line function connects all the data points and shows the pattern of discharge variation. On the other hand, geom_smooth function only shows an overall relationship between date and discharge rate.
+> Answer: geom_line function connects all the observation points and shows the pattern of discharge variation. However, it is not very useful in this case since there are so many observations and it is hard to see the variation. On the other hand, geom_smooth function shows an overall relationship between date and discharge rate. In this data set, the line can tell us the discharge rate does not change a lot and is considerably stable over time.
 
 7. [ECOTOX Neonicotinoids] Plot the concentration, divided by chemical name. Choose a geom that accurately portrays the distribution of data points.
 
@@ -168,13 +168,15 @@ tox.theme <- theme_light() +
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
 
-tox.plot <- ggplot(tox, aes(x = Chemical.Name, y = Conc..Mean..Std.)) +
+tox.plot <- ggplot(subset(tox, Conc..Units..Std. == "AI mg/L"), 
+                   aes(x = Chemical.Name, y = Conc..Mean..Std.)) +
   geom_boxplot(aes(color =Chemical.Name)) + 
   xlab(element_blank()) +
-  ylab("Concentration") +
+  ylab("Concentration (mg/L)") +
   scale_color_brewer(palette = "YlGnBu", name="Chemical Name") +
   tox.theme
   
 print(tox.plot)
+
 ```
 
