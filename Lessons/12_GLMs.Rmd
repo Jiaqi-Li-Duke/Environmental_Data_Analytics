@@ -53,14 +53,14 @@ For the NTL-LTER dataset, can we predict irradiance (light level) from depth?
 irradiance.regression <- lm(PeterPaul.chem.nutrients$irradianceWater ~ PeterPaul.chem.nutrients$depth)
 # another way to format the lm function
 irradiance.regression <- lm(data = PeterPaul.chem.nutrients, irradianceWater ~ depth)
-summary(irradiance.regression)
+summary(irradiance.regression) # irradiance = 487 - 96*depth + error (the error is a lot, because r-square is small)
 
 # Correlation
 cor.test(PeterPaul.chem.nutrients$irradianceWater, PeterPaul.chem.nutrients$depth)
 ```
 Question: How would you report the results of this test (overall findings and report of statistical output)?
 
-> ANSWER: 
+> ANSWER: Irradiance is negatively correlated with depth (linear regression; R-square = 0.3091, df = 15449, p < 0.0001) (more detailed description with the equation is also fine; F-statistics is not necessary) 
 
 So, we see there is a significant negative correlation between irradiance and depth (lower light levels at greater depths), and that this model explains about 31 % of the total variance in irradiance. Let's visualize this relationship and the model itself. 
 
@@ -75,7 +75,7 @@ An exploratory option to visualize the model fit is to use the function `plot`. 
 4. **Residuals vs. Leverage.** This graph will display potential outliers. The values that fall outside the dashed red lines (Cook's distance) are outliers for the model. Watch for drastic departures of the solid red line from horizontal - this is a sign of a poor model fit.
 
 ```{r, fig.height = 3, fig.width = 4}
-plot(irradiance.regression)
+plot(irradiance.regression) # Not what to include in the report, just check the output
 ```
 
 The option best suited for communicating findings is to plot the explanatory and response variables as a scatterplot. 
@@ -84,7 +84,7 @@ The option best suited for communicating findings is to plot the explanatory and
 # Plot the regression
 irradiancebydepth <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
-  #ylim(0, 2000) +
+  ylim(0, 2000) +
   geom_point() 
 print(irradiancebydepth) 
 ```
@@ -92,25 +92,29 @@ print(irradiancebydepth)
 Given the distribution of irradiance values, we don't have a linear relationship between x and y in this case. Let's try log-transforming the irradiance values.
 
 ```{r, fig.height = 3, fig.width = 4}
-PeterPaul.chem.nutrients <- filter(PeterPaul.chem.nutrients, irradianceWater != 0)
+PeterPaul.chem.nutrients <- filter(PeterPaul.chem.nutrients, irradianceWater != 0) # To do the log-transform, remove the zero.
 irradiance.regression2 <- lm(data = PeterPaul.chem.nutrients, log(irradianceWater) ~ depth)
-summary(irradiance.regression2)
+summary(irradiance.regression2) # log(irradiance) = 6.2 - 0.74*depth + error
 plot(irradiance.regression2)
 
 # Add a line and standard error for the linear regression
 irradiancebydepth2 <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
-  geom_smooth(method = "lm") +
-  scale_y_log10() +
-  geom_point() 
+  scale_y_log10() + # Represent log-transformed
+  geom_point()  +
+  geom_smooth(method = "lm")
 print(irradiancebydepth2) 
 
 # SE can also be removed
 irradiancebydepth2 <- 
     ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
-    geom_point() +
+    geom_point(alpha = 0.2) +
     scale_y_log10() +
-    geom_smooth(method = 'lm', se = FALSE, color = "black")
+    geom_smooth(method = 'lm', se = FALSE, color = "red") +
+  ylab("log (Irradiance)") +
+  xlab("Depth (m)") +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10, 12))
+  
 print(irradiancebydepth2)
 
 # Make the graph attractive
@@ -130,7 +134,7 @@ It is possible, and often useful, to consider multiple continuous explanatory va
 
 ``` {r, fig.height = 3, fig.width = 4}
 TPregression <- lm(data = PeterPaul.chem.nutrients, tp_ug ~ depth + dissolvedOxygen)
-summary(TPregression)
+summary(TPregression) # TP = 6 + 1.5 * depth + 0.94 * DO + error
 
 TPplot <- ggplot(PeterPaul.chem.nutrients, 
                  aes(x = dissolvedOxygen, y = tp_ug, color = depth)) +
@@ -142,14 +146,14 @@ print(TPplot)
 We can also make exploratory plots of several continuous data points to determine possible relationships, as well as covariance among explanatory variables. 
 
 ```{r, fig.height = 3, fig.width = 4}
-#install.packages("corrplot")
+install.packages("corrplot")
 library(corrplot)
 PeterPaulnutrients <- 
   PeterPaul.chem.nutrients %>%
   select(tn_ug:po4) %>%
-  na.omit()
+  na.omit() # must omit NAs to use this function
 PeterPaulCorr <- cor(PeterPaulnutrients)
-corrplot(PeterPaulCorr, method = "ellipse")
+corrplot(PeterPaulCorr, method = "ellipse") # square figure which has duplicates
 corrplot.mixed(PeterPaulCorr, upper = "ellipse")
 ```
 ### AIC to select variables
@@ -162,7 +166,7 @@ Let's say we want to know which explanatory variables will allow us to best pred
 PeterPaul.naomit <- na.omit(PeterPaul.chem.nutrients)
 TPAIC <- lm(data = PeterPaul.naomit, tp_ug ~ depth + dissolvedOxygen + 
               temperature_C + tn_ug + po4)
-step(TPAIC)
+step(TPAIC) # Start with the full model, lower AIC value, the better
 TPmodel <- lm(data = PeterPaul.naomit, tp_ug ~ temperature_C + tn_ug)
 summary(TPmodel)
 
@@ -176,11 +180,11 @@ Let's say we wanted to predict total nitrogen concentrations by depth and by lak
 ```{r, fig.height = 3, fig.width = 4}
 # main effects
 TNancova.main <- lm(data = PeterPaul.chem.nutrients, tn_ug ~ lakename + depth)
-summary(TNancova.main)
+summary(TNancova.main) # TN = 353 (Paul Lake, depth = 0) + 135.36 (if Peter) - 9.7 * depth, r-square is only 9%
 
 # interaction effects
 TNancova.interaction <- lm(data = PeterPaul.chem.nutrients, tn_ug ~ lakename * depth)
-summary(TNancova.interaction)
+summary(TNancova.interaction) # TN = 325 (Paul Lake, depth = 0) + 185 (if Peter) +20*depth (if Paul) -48*depth (if peter) + error, the model is a little bit better (12%)
 
 TNplot <- ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = tn_ug, color = lakename)) + 
   geom_point() + 

@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: Generalized Linear Models"
-author: "Student Name"
+author: "Jiaqi Li"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,11 +32,18 @@ The completed exercise is due on Tuesday, 26 February, 2019 before class begins.
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r}
-#1
+```{r, warning= FALSE}
+#1 Set up
+setwd("/Users/ljq/Desktop/Blue Devils/Data Analysis/ENV872_02")
+library(tidyverse)
+tox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
+lake <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
-#2
-
+#2 Set plot theme
+tox.theme <- theme_light() +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+theme_set(tox.theme)
 ```
 
 ## Neonicotinoids test
@@ -48,33 +55,59 @@ Research question: Were studies on various neonicotinoid chemicals conducted in 
 
 5. Is there equal variance among the publication years for each chemical? Hint: var.test is not the correct function.
 
-```{r}
-#3
+```{r, warning= FALSE, message= FALSE, fig.cap= "Frequency polygon for publication year"}
+#3 Cheminal names
+chem.name <- as.character(unique(tox$Chemical.Name))
 
-#4
+#4 # Testing normalization
+shapiro.test(subset(tox, Chemical.Name == 'Imidacloprid')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Thiacloprid')$Pub..Year) 
+shapiro.test(subset(tox, Chemical.Name == 'Thiamethoxam')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Acetamiprid')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Clothianidin')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Dinotefuran')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Nitenpyram')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Nithiazine')$Pub..Year)
+shapiro.test(subset(tox, Chemical.Name == 'Imidaclothiz')$Pub..Year)
 
-#5
+# Frequency polygon
+year.summary <-
+  ggplot(tox, aes(x = Pub..Year, color = Chemical.Name)) +
+  geom_freqpoly()
+
+print(year.summary)
+
+#5 Variance test
+bartlett.test(tox$Pub..Year ~ tox$Chemical.Name)
 
 ```
 
 6. Based on your results, which test would you choose to run to answer your research question?
 
-> ANSWER: 
+> ANSWER: One-way ANOVA, because the response variable *Publish Year* is a continuous variable and the explanatory variable *Chemical Name* is categorical.
 
 7. Run this test below. 
 
 8. Generate a boxplot representing the range of publication years for each chemical. Adjust your graph to make it pretty.
-```{r}
-#7
+```{r, warning= FALSE, fig.cap= "Boxplot of publish year for different neonicotinoid chemicals"}
+#7 One-way ANOVA
+tox.anova <- lm(tox$Pub..Year ~ tox$Chemical.Name)
+summary(tox.anova)
 
-#8
+#8 Boxplot
+tox.box <-
+  ggplot(tox, aes(x = Chemical.Name, y = Pub..Year)) +
+  geom_boxplot(aes(color =Chemical.Name)) +
+  ylab("Publish Year") +
+  scale_color_brewer(palette = "Spectral", name = "Chemical Name")
 
+print(tox.box)
 ```
 
 
 9. How would you summarize the conclusion of your analysis? Include a sentence summarizing your findings and include the results of your test in parentheses at the end of the sentence. 
 
-> ANSWER: 
+> ANSWER: The publish years for each neonicotinoid chemical are statistically significant different from each other (One-way ANOVA; F = 33.21, df = 1274, p < 0.0001). Papers on Nithiazine were published earlist and papers on Nitenpyram were published most recently.
 
 ## NTL-LTER test
 Research question: What is the best set of predictors for lake temperatures in July across the monitoring period at the North Temperate Lakes LTER? 
@@ -87,32 +120,56 @@ Research question: What is the best set of predictors for lake temperatures in J
 
 12. Run an AIC to determine what set of explanatory variables (year4, daynum, depth) is best suited to predict temperature. Run a multiple regression on the recommended set of variables. 
 
-```{r}
-#11
+```{r, warning= FALSE}
+#11 Tidy the dataset
+lake.tidy <- lake %>%
+  filter(daynum >= 182 & daynum <= 212) %>%
+  select(lakename, year4, daynum, depth, temperature_C) %>%
+  na.omit()
 
-#12
+#12 AIC test
+lakeAIC <- lm(data = lake.tidy, temperature_C ~ year4 + daynum + depth)
+step(lakeAIC)
+lake.model <- lm(data = lake.tidy, temperature_C ~ year4 + daynum + depth)
+summary(lake.model)
 
 ```
 
 13. What is the final linear equation to predict temperature from your multiple regression? How much of the observed variance does this model explain?
 
-> ANSWER: 
+> ANSWER: The final linear equation to predict temperature is: $$ temperature = -6.46 + 0.01 * year + 0.04 * day - 1.95 * depth + \epsilon $$
+> The model explains 74.17% of the observed variance (Multiple linear regression; F = 9303, df = 9718, p-value < 0.001).
 
 14. Run an interaction effects ANCOVA to predict temperature based on depth and lakename from the same wrangled dataset.
 
-```{r}
-#14
-
+```{r, warning= FALSE}
+#14 ANCOVA test
+lake.interact <- lm(data = lake.tidy, temperature_C ~ lakename * depth)
+summary(lake.interact)
 ```
 
 15. Is there an interaction between depth and lakename? How much variance in the temperature observations does this explain?
 
-> ANSWER: 
+> ANSWER: There are interactions between depth and most of the lakes, except Paul Lake. This interaction model explains 78.57% of the variance (ANCOVA; F = 2097, df = 9704, p-value < 0.001).
 
 16. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
-```{r}
-#16
+```{r, warning= FALSE, fig.cap = "Temperature of lake by depth"}
+#16 Temperature plot
+light.theme <- theme_light(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
 
+temp.plot <-
+  ggplot(lake.tidy, aes(x = depth, y = temperature_C, color = lakename)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  ylim(c(0, 35)) +
+  ylab(expression('Temperature ('*~degree*C*')')) +
+  xlab("Depth (m)") +
+  scale_color_brewer(palette = "YlGnBu", name = "Lake Name") +
+  light.theme
+
+print(temp.plot)
 ```
 
