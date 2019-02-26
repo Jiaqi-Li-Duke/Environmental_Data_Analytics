@@ -57,7 +57,7 @@ Research question: Were studies on various neonicotinoid chemicals conducted in 
 
 ```{r, warning= FALSE, message= FALSE, fig.cap= "Frequency polygon for publication year"}
 #3 Cheminal names
-chem.name <- as.character(unique(tox$Chemical.Name))
+unique(tox$Chemical.Name)
 
 #4 # Testing normalization
 shapiro.test(subset(tox, Chemical.Name == 'Imidacloprid')$Pub..Year)
@@ -108,6 +108,8 @@ print(tox.box)
 9. How would you summarize the conclusion of your analysis? Include a sentence summarizing your findings and include the results of your test in parentheses at the end of the sentence. 
 
 > ANSWER: The publish years for each neonicotinoid chemical are statistically significant different from each other (One-way ANOVA; F = 33.21, df = 1274, p < 0.0001). Papers on Nithiazine were published earlist and papers on Nitenpyram were published most recently.
+
+\newpage
 
 ## NTL-LTER test
 Research question: What is the best set of predictors for lake temperatures in July across the monitoring period at the North Temperate Lakes LTER? 
