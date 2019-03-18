@@ -62,13 +62,10 @@ Research question: Do PM2.5 concentrations have a significant trend in 2018?
 3a. Illustrate PM2.5 concentrations by date. Do not split aesthetics by site.
 
 ```{r, warning= FALSE, message= FALSE}
-# Hierarchical model
-library(nlme)
-airTest.auto <- lme(data = air, Daily.Mean.PM2.5.Concentration ~ Date, random = ~1|Site.Name)
-ACF(airTest.auto)
-airTest.mixed <- lme(data = air, Daily.Mean.PM2.5.Concentration ~ Date, random = ~1|Site.Name,
-                     correlation = corAR1(form = ~ 1|Site.Name, value = 0.473), method = "REML")
-summary(airTest.mixed)
+
+ggplot(air, aes(x = Date, y = Daily.Mean.PM2.5.Concentration)) +
+  geom_point(alpha = 0.5) +
+  ylab(expression(paste("PM 2.5 Concentration (", mu, "g/",m^3,")", sep = "")))
 ```
 
 3b. Insert the following line of code into your R chunk. This will eliminate duplicate measurements on single dates for each site.
@@ -81,15 +78,15 @@ PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
 
 ```{r, warning= FALSE, message= FALSE}
 # Eliminate duplicate measurements
+library(nlme)
 air.tidy = air[order(air[,'Date'],-air[,'Site.ID']),]
 air.tidy = air.tidy[!duplicated(air.tidy$Date),]
-airTest.auto1 <- lme(data = air.tidy, Daily.Mean.PM2.5.Concentration ~ Date, 
+airTest.auto <- lme(data = air.tidy, Daily.Mean.PM2.5.Concentration ~ Date, 
                      random = ~1|Site.Name)
-ACF(airTest.auto1)
-airTest.mixed1 <- lme(data = air.tidy, Daily.Mean.PM2.5.Concentration ~ Date, random = ~1|Site.Name,
+ACF(airTest.auto)
+airTest.mixed <- lme(data = air.tidy, Daily.Mean.PM2.5.Concentration ~ Date, random = ~1|Site.Name,
                       correlation = corAR1(form = ~ 1|Site.Name, value = 0.514), method = "REML")
-summary(airTest.mixed1)
-
+summary(airTest.mixed)
 ```
 
 Is there a significant increasing or decreasing trend in PM2.5 concentrations in 2018? 
@@ -102,7 +99,7 @@ Is there a significant increasing or decreasing trend in PM2.5 concentrations in
 # Fixed effects model
 airTest.fixed <- gls(data = air.tidy, Daily.Mean.PM2.5.Concentration ~ Date, method = "REML")
 summary(airTest.fixed)
-anova(airTest.mixed1, airTest.fixed)
+anova(airTest.mixed, airTest.fixed)
 ```
 
 Which model is better?
