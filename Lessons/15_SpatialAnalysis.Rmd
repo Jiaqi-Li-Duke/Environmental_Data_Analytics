@@ -316,33 +316,33 @@ mapView(counties_sf)
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-huc8_sf <-   
+huc8_sf <- st_read('./Data/Spatial/huc_250k_nc.shp')
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Exaimine the column names
 
 
 #View the data as a map
-
+mapView(huc8_sf)
 ```
 
 > _Challenge_: Read in the NC 8-Digit HUC dataset again, but this time _filter_ the data so the result only includes the one with a HUC_NAME value of 'Upper Neuse'.
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-upperNeuse_sf <-  
+upperNeuse_sf <- st_read('./Data/Spatial/huc_250k_nc.shp') %>%
+  filter(HUC_NAME == 'Upper Neuse')
   
-
+mapView(upperNeuse_sf)
 ```
-
 
 ## Spatial data aggregation with group_by and summarize
 ```{r Dissolve all counties into a single feature}
 #Aggregate the data using group_by and summarize, just as you would a non-spatial dataframe
 state_sf <- counties_sf %>% 
-  group_by('STATEFP') %>% 
+  group_by(STATEFP) %>% 
   summarize(ALAND = sum(ALAND))
 
 #View the data
@@ -356,13 +356,12 @@ mapview(state_sf2)
 > Now you try it: Aggregate the HUC data on the SUB attribute, computing the sum of the "AREA" field and view the result. 
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
-huc2_sf <- 
-  
+huc2_sf <- huc8_sf %>%
+  group_by(SUB) %>%
+  summarize(AREA = sum(AREA))
   
 mapview(huc2_sf)
 ```
-
-
 
 ## Transforming coordinate reference systems of datasets
 When dealing with multiple datasets, it's best to get them all using the same CRS. This can be done with the `st_transform` command, supplying the EPSG code of the CRS that you want your data to be in. Currently we have 5 spatial datasets going. Let's get those all into a consistent CRS. 
@@ -389,7 +388,6 @@ leaflet() %>% addTiles() %>%
 ```
 
 
-
 ## Visualizing multiple datasets
 You can plot multiple spatial datasets just as we've done with tabular datasets. With spatial data, however, the order of the data you plot is important...
 
@@ -411,7 +409,7 @@ ggplot() +
 ```
 
 ### leaflet
-Tip: See http://leaflet-extras.github.io/leaflet-providers/ for other basemaps
+Tip: See http://leaflet-extras.github.io/leaflet-providers/preview for other basemaps
 ```{r Visualizing multiple datasets with leaflet}
 leaflet() %>% 
   addProviderTiles(providers$Esri.WorldShadedRelief) %>%  
@@ -458,10 +456,13 @@ mapview(huc2_UTM_nc)
 > Exercise: Try subsetting the huc2_UTM dataset for SUB = 0302, then clipping counties with that subset.
 
 ```{r EXERCISE: Clip the counties dataset with the border of HUC 0302}
-huc0302_counties <- 
-  
+huc0302_counties <- huc2_utm %>%
+  filter(SUB == '0302')
+
+huc0302_counties <- st_intersection(counties_sf_utm, huc0302_counties)
+
 #Map the product, showing values by land area
-mapview(huc0302_counties['ALAND'])
+mapview(huc0302_counties['ALAND'], legend = F)
 ```
 
 
@@ -565,8 +566,9 @@ mapView(counties_sf[resultMask,])
 > Questions: how might we use the `st_buffer` function to show all counties within 30km of the site?
 
 ```{r Select counties within a 30 km area from the site}
-
+# Make a buffer first, then create a boolean mask.
                             
+
 ```
 
 
