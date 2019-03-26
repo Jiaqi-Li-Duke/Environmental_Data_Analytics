@@ -24,22 +24,42 @@ editor_options:
     + Can be named {r name} to facilitate navigation and autoreferencing
     + Chunk options allow for flexibility when the code runs and when the document is knitted
 3. **Text** with formatting options for readability in knitted document
-
 A handy cheat sheet for R markdown can be found [here](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf). Another one can be found [here](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
 
 ## WHY R MARKDOWN?
 
-<Fill in our discussion below with bullet points. Use italics and bold for emphasis>
+<Fill in our discussion below with bullet points. Use italics and bold for emphasis, this line does not show up in the R Markdown file>
+
+- Bullet points
++ Also bullet points
+* Code, output, and test/notes together in one document
+- Knit to useful formats (pdf, html, docx)
+- Legible code and output
+- Git friendly - version control
+- Reproducible
+- Updating capabilities
+- Focus on output and conclusions, not code (flexible formatting)
+- Simple syntax and autoreferencing
 
 ## TEXT EDITING CHALLENGE
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the name of the dataset and the second column should include some relevant information about the dataset.
 
+Name                   | Dataset description
+---------------------- | ----------------------
+EPAair_O3_NC2017_raw   | 2017 NC ozone concentration
+EPAair_O3_NC2018_raw   | 2018 NC ozone concentration
+ECOTOX_Neonicotinoids  | Ecotox dataset
+
+Table: Dataset Information
 
 ## R CHUNK EDITING CHALLENGE
 ### Installing packages
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run). 
 
+```{r Install, eval=FALSE}
+install.packages('knitr')
+```
 
 ### Setup
 Create an R chunk below called "setup" that checks your working directory, loads the packages `tidyverse` and `knitr`, and sets a ggplot theme. 
@@ -48,6 +68,19 @@ Load the NTL-LTER_Lake_Nutrients_Raw dataset, display the head of the dataset, a
 
 Customize the chunk options such that the code is run but is not displayed in the final document.
 
+```{r Setup, echo=FALSE}
+getwd()
+library(tidyverse)
+library(knitr)
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+theme_set(mytheme)
+
+nutri <- read.csv("../Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv")
+head(nutri)
+nutri$sampledate <- as.Date(nutri$sampledate, format = "%m/%d/%y")
+```
 
 ### Data Exploration, Wrangling, and Visualization
 Create an R chunk below to create a processed dataset do the following operations: 
@@ -55,15 +88,55 @@ Create an R chunk below to create a processed dataset do the following operation
 * Include all columns except lakeid, depth_id, and comments
 * Include only surface samples (depth = 0 m)
 
+```{r}
+nutri_tidy <- nutri %>%
+  select(-lakeid, -depth_id, -comments) %>%
+  filter(depth == 0)
+```
 
 Create a second R chunk to create a summary dataset with the mean, minimum, maximum, and standard deviation of total nitrogen concentrations for each lake. Create a second summary dataset that is identical except that it evaluates total phosphorus. Customize the chunk options such that the code is run but not displayed in the final document. 
 
+```{r, echo=FALSE}
+TN <- nutri_tidy %>%
+  filter(!is.na(tn_ug)) %>%
+  group_by(lakename) %>%
+  summarize("Mean" = mean(tn_ug), "Minimum" = min(tn_ug), "Maximum" = max(tn_ug), "SD" = sd(tn_ug))
+
+TP <- nutri_tidy %>%
+  filter(!is.na(tp_ug)) %>%
+  group_by(lakename) %>%
+  summarize("Mean" = mean(tp_ug), "Minimum" = min(tp_ug), "Maximum" = max(tp_ug), "SD" = sd(tp_ug))
+
+```
 
 Create a third R chunk that uses the function `kable` in the knitr package to display two tables: one for the summary dataframe for total N and one for the summary dataframe of total P. Use the `caption = " "` code within that function to title your tables. Customize the chunk options such that the final table is displayed but not the code used to generate the table. 
 
+```{r, echo=FALSE}
+kable(TN, caption = "Total Nitrogen")
+kable(TP, caption = "Total Phosphorus")
+```
 
 Create a fourth and fifth R chunk that generates two plots (one in each chunk): one for total N over time with different colors for each lake, and one with the same setup but for total P. Decide which geom option will be appropriate for your purpose, and select a color palette that is visually pleasing and accessible. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, customize the chunk options such that the figures are aligned on the left side of the page. Lastly, add a fig.cap chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r, echo=FALSE, fig.align='left', fig.cap="Total Nitrogen for each lake"}
+TN.plot <- ggplot(nutri_tidy) +
+  geom_point(aes(x = sampledate, y = tn_ug, col = lakename)) +
+  scale_color_discrete(name = "Lake name") +
+  ylab("Total Nitrogen") +
+  xlab("Sample date")
+
+print(TN.plot)
+```
+
+```{r, echo=FALSE, fig.align='left', fig.cap="Total Phosphorus for each lake"}
+TP.plot <- ggplot(nutri_tidy) +
+  geom_point(aes(x = sampledate, y = tp_ug, col = lakename)) +
+  scale_color_discrete(name = "Lake name") +
+  ylab("Total Phosphorus") +
+  xlab("Sample date")
+
+print(TP.plot)
+```
 
 ### Other options
 What are the chunk options that will suppress the display of errors, warnings, and messages in the final document? 
