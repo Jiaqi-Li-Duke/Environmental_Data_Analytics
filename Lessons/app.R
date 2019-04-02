@@ -3,6 +3,7 @@ library(ggplot2)
 
 
 # ui
+# Define what the output will look like to the user
 ui <- fluidPage(
    
    # title
@@ -13,6 +14,8 @@ ui <- fluidPage(
    # sidebar with slider and checkbox inputs
    sidebarLayout(
       sidebarPanel(
+        checkboxInput('histogram', label = 'histogram', value = TRUE), 
+        checkboxInput('density', label = 'density', value = TRUE),
          sliderInput('n',
                      'sample size',
                      min = 0,
@@ -29,9 +32,8 @@ ui <- fluidPage(
                      min = 0.01,
                      max = 10,
                      value = 5,
-                     step = 0.1),
-         checkboxInput('histogram', label = 'histogram', value = TRUE), 
-         checkboxInput('density', label = 'density', value = TRUE)
+                     step = 0.1)
+         
       ),
       
       # main plot
@@ -70,4 +72,3 @@ server <- function(input, output) {
 
 # run application
 shinyApp(ui = ui, server = server)
-
